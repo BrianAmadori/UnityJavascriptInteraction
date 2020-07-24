@@ -91,6 +91,9 @@ function run_tests() {
     console.log('Running tests via original SendMessage');
     run_tests_sendmessage();
 
+    console.log('Running tests via base64 + split batches using original SendMessage');
+    run_tests_sendmessage_base64_batches();
+
     optimize_sendmessage();
     console.log('Running tests via cwrap optimized SendMessage');
     run_tests_sendmessage();
@@ -350,6 +353,27 @@ function run_tests_direct_additional() {
         // console.log(s);
     }
     console.timeEnd('Cs');
+}
+
+function run_tests_sendmessage_base64_batches() {
+    var SendMessage = unityInstance.Module.SendMessage
+    let batch = '';
+
+    let array = [];
+
+    for (i = 0; i < 146; i++) {
+        array.push(i);
+    }
+
+    console.time('Base64 batches');
+    for (i = 0; i < iterations; i++) {
+        let arrayBuffer = new Uint8Array(146);
+        arrayBuffer.set(array);
+        batch += btoa(String.fromCharCode(...arrayBuffer));
+        batch += "\n";
+    }
+    SendMessage('Receiver', 'Base64Batch', batch);
+    console.timeEnd('Base64 batches');
 }
 
 

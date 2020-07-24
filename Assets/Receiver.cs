@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Text;
 using UnityEngine.PlayerLoop;
 
 public class Receiver : MonoBehaviour
@@ -98,6 +99,20 @@ public class Receiver : MonoBehaviour
     private void TargetMessageWrapper(SendSceneMessage message)
     {
         TargetMessage(message);
+    }
+
+    List<string> stringMsgs = new List<string>(10000);
+
+    public void Base64Batch(string batch)
+    {
+        string[] splitBatch = batch.Split('\n');
+
+        for (int i = 0; i < splitBatch.Length; i++)
+        {
+            byte[] bytes = System.Convert.FromBase64String(splitBatch[i]);
+            string message = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
+            stringMsgs.Add(message);
+        }
     }
 
     #endregion
